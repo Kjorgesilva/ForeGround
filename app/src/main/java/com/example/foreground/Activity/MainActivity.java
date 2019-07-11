@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.example.foreground.ForeGround.ForeGround;
 import com.example.foreground.InterfaceHelp.InterfaceHelp;
 import com.example.foreground.R;
 
@@ -24,8 +25,11 @@ public class MainActivity extends AppCompatActivity implements InterfaceHelp {
 
 
     private Context contexto = this;
-    private Button btnGPS, btnWIFI;
+    private Button btnGPS, btnWIFI, btnForeGround,btnParar;
     private TextView txtGPS, txtWIFI;
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,6 +46,8 @@ public class MainActivity extends AppCompatActivity implements InterfaceHelp {
         btnWIFI = findViewById(R.id.btnWIFI);
         txtGPS = findViewById(R.id.statusGPS);
         txtWIFI = findViewById(R.id.statusWIFI);
+        btnForeGround = findViewById(R.id.btnForeGround);
+        btnParar = findViewById(R.id.btnParar);
     }
 
     @Override
@@ -69,6 +75,25 @@ public class MainActivity extends AppCompatActivity implements InterfaceHelp {
             }
         });
 
+        btnForeGround.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Intent intent = new Intent(contexto, ForeGround.class);
+                intent.setAction(ForeGround.ACTION_START_FOREGROUND_SERVICE);
+                startService(intent);
+            }
+        });
+
+        btnParar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(contexto, ForeGround.class);
+                intent.setAction(ForeGround.STOP_FOREGROUND_SERVICE);
+                startService(intent);
+            }
+        });
+
 
     }
 
@@ -79,6 +104,7 @@ public class MainActivity extends AppCompatActivity implements InterfaceHelp {
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             Log.e("gps", "GPS Desligado");
+
             txtGPS.setText("Desativado");
             ativaLocalizacaoGPS();
         } else {
@@ -88,6 +114,7 @@ public class MainActivity extends AppCompatActivity implements InterfaceHelp {
 
 
     }
+
 
     private void ativaLocalizacaoGPS() {
 
@@ -115,8 +142,6 @@ public class MainActivity extends AppCompatActivity implements InterfaceHelp {
         alerta.show();
 
     }
-
-
 
 
     //Metodos para o WI-FI
@@ -165,8 +190,6 @@ public class MainActivity extends AppCompatActivity implements InterfaceHelp {
         ConnectivityManager manager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         return manager.getActiveNetworkInfo() != null && manager.getActiveNetworkInfo().isConnectedOrConnecting();
     }
-
-
 
 
     //Metodos para permissao
