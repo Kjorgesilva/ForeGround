@@ -55,12 +55,14 @@ public class ForeGround extends Service {
         if (intent != null) {
             String action = intent.getAction();
             switch (action) {
+
                 case ACTION_START_FOREGROUND_SERVICE:
                     notification();
                     ForeGround.Worke w = new Worke(startId);
                     ativo = true;
                     w.start();
                     break;
+
                 case STOP_FOREGROUND_SERVICE:
                     ativo = false;
                     break;
@@ -70,7 +72,7 @@ public class ForeGround extends Service {
         return super.onStartCommand(intent, flags, startId);
     }
 
-    //Serve para usar em celular com a api maior
+    //Serve para rodar em celular com a api maior
     @NonNull
     @TargetApi(26)
     private synchronized String createChannel() {
@@ -126,7 +128,6 @@ public class ForeGround extends Service {
             this.startId = startId;
         }
 
-
         public void run() {
             while (ativo) {
                 try {
@@ -135,7 +136,7 @@ public class ForeGround extends Service {
                     if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
                         Log.e("gps", "GPS Desligado");
                     } else {
-                        PegarLocalizacao();
+                        pegarLocalizacao();
                     }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -148,7 +149,7 @@ public class ForeGround extends Service {
 
 
     //pegar a localização do usuario
-    private void PegarLocalizacao() {
+    private void pegarLocalizacao() {
 
         if (ActivityCompat.checkSelfPermission(contexto, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission

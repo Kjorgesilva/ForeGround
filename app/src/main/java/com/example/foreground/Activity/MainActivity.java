@@ -114,8 +114,6 @@ public class MainActivity extends AppCompatActivity implements InterfaceHelp {
 
 
     }
-
-
     private void ativaLocalizacaoGPS() {
 
         AlertDialog.Builder alerta = new AlertDialog.Builder(contexto);
@@ -185,7 +183,6 @@ public class MainActivity extends AppCompatActivity implements InterfaceHelp {
 
 
     }
-
     public boolean verificarWifi() {
         ConnectivityManager manager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         return manager.getActiveNetworkInfo() != null && manager.getActiveNetworkInfo().isConnectedOrConnecting();
@@ -206,7 +203,6 @@ public class MainActivity extends AppCompatActivity implements InterfaceHelp {
             Log.println(Log.ERROR, "entrou", "erro" + e.getMessage());
         }
     }
-
     public Boolean verPermissao() {
         int verificarLocalizacaoPreciso = ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION);
         int verificarLocalizacaoAproximada = ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION);
@@ -216,7 +212,6 @@ public class MainActivity extends AppCompatActivity implements InterfaceHelp {
         }
         return false;
     }
-
     public void pedirPermissao() {
         ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 2);
     }
