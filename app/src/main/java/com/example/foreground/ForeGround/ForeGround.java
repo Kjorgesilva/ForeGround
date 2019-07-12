@@ -5,6 +5,7 @@ import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -13,6 +14,7 @@ import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.nfc.FormatException;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -21,9 +23,11 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+import android.widget.Toast;
 
 import static android.app.Notification.PRIORITY_MAX;
 
+import com.example.foreground.Activity.ListaActivity;
 import com.example.foreground.R;
 import com.example.foreground.WebService.LocalizacaoAtualWs;
 
@@ -32,8 +36,11 @@ import java.util.Map;
 
 
 public class ForeGround extends Service {
+
     public static final String ACTION_START_FOREGROUND_SERVICE = "ACTION_START_FOREGROUND_SERVICE";
     public static final String STOP_FOREGROUND_SERVICE = "STOP_FOREGROUND_SERVICE";
+    public static final String ACTION_PRIMEIRO_BOTAO = "ACTION_PRIMEIRO_BOTAO";
+    public static final String ACTION_SEGUNDO_BOTAO = "ACTION_SEGUNDO_BOTAO";
     public boolean ativo = true;
     LocationManager locationManager;
     String lattitude, longitude;
@@ -67,6 +74,19 @@ public class ForeGround extends Service {
                     ativo = false;
                     break;
 
+                case ACTION_PRIMEIRO_BOTAO:
+                    notification();
+                    Toast.makeText(contexto, "primeiro botao", Toast.LENGTH_SHORT).show();
+                    break;
+
+                case ACTION_SEGUNDO_BOTAO:
+                    notification();
+                    Intent i = new Intent(contexto, ListaActivity.class);
+                    i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    //serve para fechar a tela que fica quando abre outra.
+                    startActivity(i);
+                    break;
+
             }
         }
         return super.onStartCommand(intent, flags, startId);
@@ -94,7 +114,7 @@ public class ForeGround extends Service {
     }
 
 
-    //mostra uma notificação no top da tela
+    //Mostra uma notificação no top da tela
     public Notification notification() {
         String channel;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
@@ -102,8 +122,9 @@ public class ForeGround extends Service {
         else {
             channel = "";
         }
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(contexto, channel);
+        builder.setVisibility(NotificationCompat.VISIBILITY_PRIVATE);
         Intent intent = new Intent();
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channel);
         builder.setWhen(System.currentTimeMillis());
         builder.setSmallIcon(R.drawable.ic_simbolo_logo_sighra_color);
         builder.setSubText("Localização");
@@ -111,6 +132,25 @@ public class ForeGround extends Service {
         NotificationCompat.BigTextStyle bigTextStyle = new NotificationCompat.BigTextStyle();
         bigTextStyle.setBigContentTitle("SIGhRA");
         builder.setStyle(bigTextStyle);
+
+        
+
+
+        // Primeiro Botao
+        Intent playIntent = new Intent(this, ForeGround.class);
+        playIntent.setAction(ACTION_PRIMEIRO_BOTAO);
+        PendingIntent pendingPlayIntent = PendingIntent.getService(this, 0, playIntent, 0);
+        NotificationCompat.Action playAction = new NotificationCompat.Action(android.R.drawable.ic_media_play, "Toast", pendingPlayIntent);
+        builder.addAction(playAction);
+        //Segundo Botao
+        Intent intent1 = new Intent(this, ForeGround.class);
+        intent1.setAction(ACTION_SEGUNDO_BOTAO);
+        PendingIntent pendingPla = PendingIntent.getService(this, 0, intent1, 0);
+        NotificationCompat.Action playActio = new NotificationCompat.Action(android.R.drawable.ic_lock_power_off, "Intent", pendingPla);
+
+        builder.addAction(playActio);
+
+
 
         Notification notification = builder.setPriority(PRIORITY_MAX).setCategory(Notification.CATEGORY_SERVICE).build();
         // Start foreground service.
@@ -148,7 +188,7 @@ public class ForeGround extends Service {
     }
 
 
-    //pegar a localização do usuario
+    //Pegar a localização do usuario
     private void pegarLocalizacao() {
 
         if (ActivityCompat.checkSelfPermission(contexto, Manifest.permission.ACCESS_FINE_LOCATION)
@@ -190,12 +230,14 @@ public class ForeGround extends Service {
                 Log.e("localização", " Lattitude = " + lattitude + " Longitude = " + longitude);
 
             } else {
-                Log.e("gps", "Esperando GPS");
-                LocationManager mlocManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-                MyLocationListener mlocListener = new MyLocationListener();
-                Looper.prepare();
-                mlocManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, mlocListener);
-                Looper.loop();
+                //Log.e("", "Esperando");
+//                LocationManager mlocManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+//                MyLocationListener mlocListener = new MyLocationListener();
+//                Looper.prepare();
+//                mlocManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 0, mlocListener);
+//                Looper.loop();
+                pegarLocalizacao();
+
 
 
             }
@@ -234,6 +276,7 @@ public class ForeGround extends Service {
         LocalizacaoAtualWs.enviarLocalizacao(contexto, "localizacao", map);
 
     }
+
 
 
 }

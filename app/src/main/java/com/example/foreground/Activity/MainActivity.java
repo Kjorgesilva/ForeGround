@@ -212,6 +212,7 @@ public class MainActivity extends AppCompatActivity implements InterfaceHelp {
         }
         return false;
     }
+
     public void pedirPermissao() {
         ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 2);
     }
